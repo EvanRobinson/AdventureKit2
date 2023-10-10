@@ -2,7 +2,8 @@
     led.h
     Evan Robinson, 2023-09-30
 
-    Class to manage LED on arduino
+    Classes to manage single color LED,
+        Red/Green Bicolor LED
     Presumes HIGH is on, LOW is off
 */
 
@@ -17,9 +18,30 @@ class LED {
         void turnOn();
         void turnOff();
         bool isOn();
+
     private:
         uint8_t _pin;
         bool _isOn;
+};
+
+class RedGreenLED {
+    public:
+        RedGreenLED(uint8_t redPin, uint8_t greenPin);
+        bool isOn(void);
+        bool isRed(void);
+        bool isGreen(void);
+        void turnOff(void);
+        void turnOnRed(void);
+        void turnOnGreen(void);
+        bool wasRed(void);
+
+    private:
+        uint8_t _redPin;
+        uint8_t _greenPin;
+        bool _isOn;
+        bool _isRed;
+        bool _isGreen;
+        bool _wasRed;
 };
 
 #endif

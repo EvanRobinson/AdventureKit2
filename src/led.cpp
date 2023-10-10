@@ -9,6 +9,7 @@
 #include "led.h"
 #include <Arduino.h>
 
+
 LED::LED(uint8_t pin) {
     _pin = pin;
     pinMode(_pin, OUTPUT);
@@ -27,4 +28,53 @@ void LED::turnOff() {
 
 bool LED::isOn() {
     return _isOn;
+}
+
+RedGreenLED::RedGreenLED(uint8_t redPin, uint8_t greenPin) {
+    _redPin = redPin;
+    _greenPin = greenPin;
+    _isOn = false;
+    _isRed = false;
+    _isGreen = false;
+    _wasRed = false;
+    pinMode(_redPin, OUTPUT);
+    pinMode(_greenPin, OUTPUT);
+    turnOff();
+}
+
+bool RedGreenLED::isRed(void) {
+    return _isRed;
+}
+
+bool RedGreenLED::isGreen(void) {
+    return _isGreen;
+}
+
+bool RedGreenLED::isOn(void) {
+    return _isOn;
+}
+
+void RedGreenLED::turnOff(void) {
+    digitalWrite(_redPin, LOW);
+    digitalWrite(_greenPin, LOW);    
+}
+
+void RedGreenLED::turnOnRed(void) {
+    digitalWrite(_redPin, HIGH);
+    digitalWrite(_greenPin, LOW);
+    _isOn = true;
+    _isRed = true;
+    _wasRed = true;
+}
+
+void RedGreenLED::turnOnGreen(void) {
+    digitalWrite(_redPin, LOW);
+    digitalWrite(_greenPin, HIGH);
+    _isOn = true;
+    _isGreen = true;
+    _wasRed = false; 
+}
+
+bool RedGreenLED::wasRed(void) {
+    return _wasRed;
 }
