@@ -1,66 +1,53 @@
-#include <Arduino.h>
+/*
+  Simulated post-apocalyptic dwelling
 
+  Supports simulated interior lighting (interiorLights)
+    controlled by a momentary switch (interiorLightsButton)
+    which toggles lights on and off
+*/
+#include <Arduino.h>
+#include "button.h"
+#include "led.h"
+
+// Hardware values
 const uint8_t whiteLEDControlPin = 22;
 const uint8_t buttonInputPin = 24;
-const int ledOnIndefintely = 0;
-const long debounceInterval = 50L;
-const int buttonPressed = 1;
 
-// put function forward declarations here:
-void turnLEDOnFor(int millis = 1000, uint8_t pin = whiteLEDControlPin);
-void turnLEDOff(uint8_t pin = whiteLEDControlPin);
-void toggleInteriorLights(void);
+// Dwelling Contents
+Button interiorLightsButton = Button(buttonInputPin);
+LED interiorLights = LED(whiteLEDControlPin);
+ 
+// Forward Declarations
+void interiorLighting(void);
 
+// Arduino Setup
 void setup() {
-  pinMode(whiteLEDControlPin, OUTPUT);
-  turnLEDOff();
-  pinMode(buttonInputPin, INPUT);
-
   Serial.begin(9600);
-  Serial.println("setup complete");
+  while (!Serial)
+    ;
 }
 
-
+// Arduino Loop
 void loop() {
-  static int previousPinValue = 0;
-  static long previousDebounceTime = millis();
-  int pinValue = digitalRead(buttonInputPin);
+  // Loop every 1/10th seconds
+  delay(100);
 
-  if ((millis() - previousDebounceTime) < debounceInterval) {
-    // debouncing: if the transition was less than debounceInterval ms ago, ignore it
-    return;
-  }
+  interiorLighting();
+}
 
-  if (previousPinValue != pinValue) {
-    previousPinValue = pinValue;
-    if (pinValue == buttonPressed) {
-      toggleInteriorLights();
+// Local Functions
+void interiorLighting() {
+  // Turn interiorLights on and off
+  if (interiorLightsButton.isPressed()) {
+    if (interiorLightsButton.hasChanged()) {
+        if (interiorLights.isOn()) {
+          Serial.println("Lights Off");
+          interiorLights.turnOff();
+        }
+        else {
+          Serial.println("Lights On");
+          interiorLights.turnOn();
+        }
     }
   }
-}
-
-// put function definitions here:
-void toggleInteriorLights(void) {
-  static bool lightIsOn = false;
-
-  if (lightIsOn) {
-    turnLEDOff();
-    lightIsOn = false;
-  }
-  else {
-    turnLEDOnFor(ledOnIndefintely);
-    lightIsOn = true;
-  }
-}
-
-void turnLEDOnFor(int millis, uint8_t pin) {
-  digitalWrite(pin, HIGH);
-  if (millis != ledOnIndefintely) {
-    delay(millis);
-    turnLEDOff();
-  }
-}
-
-void turnLEDOff(uint8_t pin) {
-  digitalWrite(pin, LOW);
 }
