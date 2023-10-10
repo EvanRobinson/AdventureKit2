@@ -1,0 +1,9 @@
+Label;Part Type;mn;mpn;part number;
+LED1;LEDs;;;;
+Part1;Arduino Mega 2560 (Rev3);;;;
+R1;100Ω Resistor;;;;
+
+Amount;Part Type;mn;mpn;part number;
+1;100Ω Resistor;;;;
+1;Arduino Mega 2560 (Rev3);;;;
+1;LEDs;;;;
