@@ -12,6 +12,7 @@
 #include <math.h>
 #include "button.h"
 #include "led.h"
+#include "passive_buzzer.h"
 #include "power.h"
 #include "photoresistor.h"
 
@@ -19,6 +20,8 @@
 const uint8_t whiteLEDControlPin = 22;
 const uint8_t buttonInputPin = 24;
 const uint8_t photoResistorInputPin = 0;
+
+const uint8_t buzzerPWMPin = 13;
 
 // Timing constants
 const unsigned long oneTenthOfASecond = 100L; // one 'tick'
@@ -29,6 +32,7 @@ const int ticksPerCharging = 10;              // charging happens every second
 Button interiorLightsButton = Button(buttonInputPin);
 LED interiorLights = LED(whiteLEDControlPin);
 Power electricalStorage = Power(photoResistorInputPin);
+Buzzer alarmSystem = Buzzer(buzzerPWMPin);
 
 const double interiorLightsPowerUsage = 3.0;
 
@@ -39,8 +43,11 @@ void batteryChargingAndUsage(void);
 // Arduino Setup
 void setup() {
   Serial.begin(9600);
+  while (!Serial);
   Serial.println("setup complete");
+
 }
+
 
 // Arduino Loop
 // Instead of using delay(), millis() is used to enforce a timing 'tick' of
@@ -54,6 +61,7 @@ void loop() {
   }
   previousMillis = currentMillis;
   tickCount++;
+  alarmSystem.tick();
   electricalStorage.tick();
 
   if ((tickCount % ticksPerLighting) == 0) {
@@ -76,6 +84,7 @@ void interiorLighting() {
         }
         else if (!electricalStorage.isCritical()) {
           if (electricalStorage.isLow()) {
+            alarmSystem.alarm(power_low);
             Serial.println("Lights On But DIMMED");
             // TBD: turn them on dim if batteryLevel is between critical and warning levels
              interiorLights.turnOn();
@@ -91,10 +100,12 @@ void interiorLighting() {
   // manage lights depending upon current power levels
   if (interiorLights.isOn()) {
     if (electricalStorage.isCritical()) {
+      alarmSystem.alarm(power_critical);
       interiorLights.turnOff();
       Serial.println("Power Critical, Lights Off");
     }
     else if (electricalStorage.isLow()) {
+      alarmSystem.alarm(power_low);
       // TBD: dim interiorLights
       Serial.println("Lights are on, but dimmed");
     }
