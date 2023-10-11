@@ -13,14 +13,14 @@
 #include "button.h"
 #include "led.h"
 #include "passive_buzzer.h"
-#include "power.h"
 #include "photoresistor.h"
-
+#include "potentiometer.h"
+#include "power.h"
 // Hardware values
-const uint8_t whiteLEDControlPin = 22;
+const uint8_t whiteLEDPWMControlPin = 13;
 const uint8_t buttonInputPin = 24;
 const uint8_t photoResistorInputPin = 0;
-
+const uint8_t potentiometerAnalogInputPin = 15;
 const uint8_t buzzerPWMPin = 13;
 
 // Timing constants
@@ -30,9 +30,10 @@ const int ticksPerCharging = 10;              // charging happens every second
 
 // Dwelling Contents
 Button interiorLightsButton = Button(buttonInputPin);
-LED interiorLights = LED(whiteLEDControlPin);
+DimmableLED interiorLights = DimmableLED(whiteLEDPWMControlPin);
 Power electricalStorage = Power(photoResistorInputPin);
 Buzzer alarmSystem = Buzzer(buzzerPWMPin);
+Potentiometer interiorLightsDimmer = Potentiometer(potentiometerAnalogInputPin);
 
 const double interiorLightsPowerUsage = 3.0;
 
@@ -40,12 +41,13 @@ const double interiorLightsPowerUsage = 3.0;
 void interiorLighting(void);
 void batteryChargingAndUsage(void);
 
+
+
 // Arduino Setup
 void setup() {
   Serial.begin(9600);
   while (!Serial);
   Serial.println("setup complete");
-
 }
 
 
@@ -56,6 +58,10 @@ void loop() {
   static int tickCount = 0;
   static unsigned long previousMillis = 0L;
   unsigned long currentMillis = millis();
+
+  int potValue = int(interiorLightsDimmer.readScaledTo(0,255));
+  interiorLights.dimmerLevel(potValue);
+
   if ((currentMillis - previousMillis) < oneTenthOfASecond) {
     return;
   }
@@ -79,18 +85,15 @@ void interiorLighting() {
   if (interiorLightsButton.isPressed()) {
     if (interiorLightsButton.hasChanged()) {
         if (interiorLights.isOn()) {
-          Serial.println("Lights Off");
           interiorLights.turnOff();
         }
         else if (!electricalStorage.isCritical()) {
           if (electricalStorage.isLow()) {
             alarmSystem.alarm(power_low);
-            Serial.println("Lights On But DIMMED");
             // TBD: turn them on dim if batteryLevel is between critical and warning levels
-             interiorLights.turnOn();
+             interiorLights.dimmerLevel(64);
           }
           else {
-            Serial.println("Lights On");
             interiorLights.turnOn();
           }
         }
@@ -101,13 +104,11 @@ void interiorLighting() {
   if (interiorLights.isOn()) {
     if (electricalStorage.isCritical()) {
       alarmSystem.alarm(power_critical);
-      interiorLights.turnOff();
-      Serial.println("Power Critical, Lights Off");
+      interiorLights.dimmerLevel(2);
     }
     else if (electricalStorage.isLow()) {
       alarmSystem.alarm(power_low);
-      // TBD: dim interiorLights
-      Serial.println("Lights are on, but dimmed");
+      interiorLights.dimmerLevel(64);
     }
   }
 }
@@ -119,6 +120,8 @@ void batteryChargingAndUsage() {
 
   // account for interiorLights power usage
   if (interiorLights.isOn()) {
+    int interiorLightsPowerUsage = interiorLights.brightness() / 64;
+    Serial.println(interiorLightsPowerUsage);
     electricalStorage.usePower(interiorLightsPowerUsage);
   }
 

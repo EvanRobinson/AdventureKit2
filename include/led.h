@@ -18,11 +18,25 @@ class LED {
         void turnOn();
         void turnOff();
         bool isOn();
-
-    private:
+    protected:
         uint8_t _pin;
         bool _isOn;
+    private:
+
 };
+
+class DimmableLED : LED {
+    public:
+        DimmableLED(uint8_t pwmPin);
+        void dimmerLevel(uint8_t brightness);
+        void turnOn();
+        void turnOff();
+        bool isOn();
+        uint8_t brightness();
+    private:
+        uint8_t _brightness;
+};
+
 
 class RedGreenLED {
     public:

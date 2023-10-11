@@ -30,6 +30,31 @@ bool LED::isOn() {
     return _isOn;
 }
 
+DimmableLED::DimmableLED(uint8_t pwmPin) : LED(pwmPin) {
+    _brightness = 128;  // middle of the road
+}
+
+void DimmableLED::dimmerLevel(uint8_t brightness) {
+    _brightness = brightness;
+    turnOn();
+}
+
+void DimmableLED::turnOn(void) {
+    analogWrite(_pin, _brightness);
+}
+
+void DimmableLED::turnOff(void) {
+    analogWrite(_pin, 0);
+}
+
+bool DimmableLED::isOn(void) {
+    return (_brightness > 0);
+}
+
+uint8_t DimmableLED::brightness() {
+    return _brightness;
+}
+
 RedGreenLED::RedGreenLED(uint8_t redPin, uint8_t greenPin) {
     _redPin = redPin;
     _greenPin = greenPin;
