@@ -32,7 +32,6 @@ class DimmableLED : LED {
         void turnOn();
         void turnOff();
         bool isOn();
-        uint8_t brightness();
     private:
         uint8_t _brightness;
 };
