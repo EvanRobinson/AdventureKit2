@@ -17,7 +17,7 @@
 #include "potentiometer.h"
 #include "power.h"
 // Hardware values
-const uint8_t whiteLEDPWMControlPin = 12;
+const uint8_t whiteLEDPWMControlPin = 13;
 const uint8_t buttonInputPin = 24;
 const uint8_t photoResistorInputPin = 0;
 const uint8_t potentiometerAnalogInputPin = 15;
