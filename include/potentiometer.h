@@ -21,7 +21,6 @@ class Potentiometer {
     protected:
     private:
         uint8_t _pin;
-        double _scale;
         int _previousValue;
         int _currentValue;
 };

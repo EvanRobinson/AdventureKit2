@@ -18,8 +18,8 @@ PhotoResistor::PhotoResistor(uint8_t pin) {
 
 double PhotoResistor::value(void) {
     int lightLevel = analogRead(_pin);
-    lightLevel = map(lightLevel, minPoint, maxPoint, 0, 255);
-    lightLevel = constrain(lightLevel, 0, 255);
-    _value = ((double) lightLevel) / 2.55;
+    lightLevel = map(lightLevel, minPoint, maxPoint, 0, 255); // TBD: Fix magic number
+    lightLevel = constrain(lightLevel, 0, 255); // TBD: Fix magic number
+    _value = ((double) lightLevel) / 2.55; // TBD: Fix magic number
     return _value;
 }

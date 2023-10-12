@@ -31,7 +31,7 @@ bool LED::isOn() {
 }
 
 DimmableLED::DimmableLED(uint8_t pwmPin) : LED(pwmPin) {
-    _brightness = 255;
+    _brightness = 255; // TBD: Fix magic number
     turnOff();
 }
 

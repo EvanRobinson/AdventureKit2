@@ -116,8 +116,6 @@ void Power::usePower(double powerUsed) {
 }
 
 void Power::showStatus(void) {
-    bool audioAlarm = false;
-
     // TBD: Output _battery and _solar levels to display
     if (isNearFull()) {
         batteryStatusLight.turnOnGreen();
@@ -127,13 +125,9 @@ void Power::showStatus(void) {
     }
     else if (isCritical()) {
         batteryStatusLight.turnOnRed();
-        // TBD: repeating audio warning beep
-        audioAlarm = true;
     }
     else if (isLow()) {
         batteryStatusLight.turnOnRed();
-        // TBD: one-time audio warning beep
-        audioAlarm = true;
     }
     else {
         batteryStatusLight.turnOff();

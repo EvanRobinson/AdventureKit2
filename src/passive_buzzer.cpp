@@ -20,8 +20,8 @@ Buzzer::Buzzer(uint8_t pin) {
 }
 
 void Buzzer::alarm(AlarmSignals signal) {
-    static int signalFreq[] = {0, 440, 880, 220};
-    static int signalDuration = 1000;
+    static int signalFreq[] = {0, 440, 880, 220}; // TBD: Fix magic number
+    static int signalDuration = 1000; // TBD: Fix magic number
 
     // don't repeat the same alarm
     if (signal != _alarm) {

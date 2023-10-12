@@ -17,11 +17,11 @@
 #include "potentiometer.h"
 #include "power.h"
 // Hardware values
-const uint8_t whiteLEDPWMControlPin = 13;
+const uint8_t interiorLightsPWMControlPin = 12;
 const uint8_t buttonInputPin = 24;
-const uint8_t photoResistorInputPin = 0;
-const uint8_t potentiometerAnalogInputPin = 15;
-const uint8_t buzzerPWMPin = 13;
+const uint8_t solarArrayAnalogInputPin = 0;
+const uint8_t dimmerAnalogInputPin = 15;
+const uint8_t alarmSystemPWMPin = 13;
 
 // Timing constants
 const unsigned long oneTenthOfASecond = 100L; // one 'tick'
@@ -30,10 +30,10 @@ const int ticksPerCharging = 10;              // charging happens every second
 
 // Dwelling Contents
 Button interiorLightsButton = Button(buttonInputPin);
-DimmableLED interiorLights = DimmableLED(whiteLEDPWMControlPin);
-Power electricalStorage = Power(photoResistorInputPin);
-Buzzer alarmSystem = Buzzer(buzzerPWMPin);
-Potentiometer interiorLightsDimmer = Potentiometer(potentiometerAnalogInputPin);
+DimmableLED interiorLights = DimmableLED(interiorLightsPWMControlPin);
+Power electricalStorage = Power(solarArrayAnalogInputPin);
+Buzzer alarmSystem = Buzzer(alarmSystemPWMPin);
+Potentiometer interiorLightsDimmer = Potentiometer(dimmerAnalogInputPin);
 
 const double interiorLightsPowerUsage = 3.0;
 
@@ -59,7 +59,7 @@ void loop() {
   static unsigned long previousMillis = 0L;
   unsigned long currentMillis = millis();
 
-  int potValue = int(interiorLightsDimmer.readScaledTo(0,255));
+  int potValue = int(interiorLightsDimmer.readScaledTo(0,255)); // TBD: Fix magic number
   interiorLights.dimmerLevel(potValue);
 
   if ((currentMillis - previousMillis) < oneTenthOfASecond) {
@@ -97,17 +97,17 @@ void interiorLighting() {
   if (interiorLights.isOn()) {
     if (electricalStorage.isCritical()) {
       alarmSystem.alarm(power_critical);
-      interiorLights.dimmerLevel(2);
+      interiorLights.dimmerLevel(2); // TBD: Fix magic number
       interiorLights.turnOn();
     }
     else if (electricalStorage.isLow()) {
       alarmSystem.alarm(power_low);
-      interiorLights.dimmerLevel(63);
+      interiorLights.dimmerLevel(63); // TBD: Fix magic number
       interiorLights.turnOn();
     }
     else {
       if (interiorLights.isOn()) {
-        interiorLights.dimmerLevel(255);
+        interiorLights.dimmerLevel(255); // TBD: Fix magic number
         interiorLights.turnOn();
       }
     }

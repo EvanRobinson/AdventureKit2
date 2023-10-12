@@ -1,8 +1,9 @@
 Label;Part Type;mn;mpn;part number;
+alarmSystem;Passive Buzzer;;;;
 batteryStatusLight;Red (633nm) LED;;;;
 interiorLighting;White (4500K) LED;;;;
 interiorLightsButton;Pushbutton;;;;
-Mod1;Passive Buzzer;;;;
+interiorLightsDimmer;Trimmer Potentiometer;;;;
 Part1;Arduino Mega 2560 (Rev3);;;;
 R2;100Ω Resistor;;;;
 R3;220Ω Resistor;;;;
@@ -20,4 +21,5 @@ Amount;Part Type;mn;mpn;part number;
 1;Passive Buzzer;;;;
 1;Pushbutton;;;;
 1;Red (633nm) LED;;;;
+1;Trimmer Potentiometer;;;;
 1;White (4500K) LED;;;;

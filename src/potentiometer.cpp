@@ -11,7 +11,6 @@
 
 Potentiometer::Potentiometer(uint8_t pin) {
     _pin = pin;
-    _scale = 1.0;
     _previousValue = 0;
     _currentValue = 0;
 }
@@ -24,7 +23,7 @@ int Potentiometer::read(void) {
 double Potentiometer::readScaledTo(double minValue, double maxValue) {
     read();
     double rangeSize = maxValue - minValue;
-    double readingSize = 1023.0;
+    double readingSize = 1023.0;    // TBD: Fix magic number
 
     double scaled = minValue + (_currentValue * rangeSize / readingSize);
     scaled = min(scaled, maxValue);
