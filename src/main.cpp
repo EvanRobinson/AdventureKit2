@@ -86,11 +86,9 @@ void interiorLighting() {
     if (interiorLightsButton.hasChanged()) {
       if (interiorLights.isOn()) {
         interiorLights.turnOff();
-        Serial.println("interiorLighting turnOff()");
       }
       else {
         interiorLights.turnOn();
-        Serial.println("interiorLighting turnOn()");
       }
     }
   }
@@ -101,13 +99,11 @@ void interiorLighting() {
       alarmSystem.alarm(power_critical);
       interiorLights.dimmerLevel(2);
       interiorLights.turnOn();
-      Serial.println("interiorLighting dimmerLevel(2) / turnOn()");
     }
     else if (electricalStorage.isLow()) {
       alarmSystem.alarm(power_low);
       interiorLights.dimmerLevel(63);
       interiorLights.turnOn();
-      Serial.println("interiorLighting dimmerLevel(64) / turnOn()");
     }
     else {
       if (interiorLights.isOn()) {
@@ -126,7 +122,6 @@ void batteryChargingAndUsage() {
   // account for interiorLights power usage
   if (interiorLights.isOn()) {
     int interiorLightsPowerUsage = 1;
-    Serial.println(interiorLightsPowerUsage);
     electricalStorage.usePower(interiorLightsPowerUsage);
   }
 

@@ -47,7 +47,6 @@ void DimmableLED::turnOn(void) {
 void DimmableLED::turnOff(void) {
     analogWrite(_pin, 0);
     _isOn = false;
-    Serial.println("turn off");
 }
 
 bool DimmableLED::isOn(void) {
