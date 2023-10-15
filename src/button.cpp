@@ -26,12 +26,20 @@ int Button::value() {
     // TBD: Debounce
     int currentValue = digitalRead(_pin);
     _valueHasChanged = (_value != currentValue);
-    // if (_valueHasChanged) {
-    //     Serial.println(currentValue);
-    // }
     return digitalRead(_pin);
 }
 
 bool Button::hasChanged() {
     return _valueHasChanged;
+}
+
+
+ButtonPullUp::ButtonPullUp(uint8_t pin) : Button(pin) {
+    pinMode(_pin, INPUT_PULLUP);
+    _value = value();
+}
+
+bool ButtonPullUp::isPressed() {
+    _value = value();
+    return (_value == LOW);
 }

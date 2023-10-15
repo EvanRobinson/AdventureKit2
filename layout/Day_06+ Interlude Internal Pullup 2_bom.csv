@@ -1,11 +1,10 @@
 Label;Part Type;mn;mpn;part number;
 alarmSystem;Passive Buzzer;;;;
 batteryStatusLight;Red (633nm) LED;;;;
+Exterior Light Override;Pushbutton;;;;
 interiorLighting;White (4500K) LED;;;;
 interiorLightsButton;Pushbutton;;;;
-interiorLightsDimmer;Trimmer Potentiometer;;;;
 Part1;Arduino Mega 2560 (Rev3);;;;
-R2;100Ω Resistor;;;;
 R3;220Ω Resistor;;;;
 R4;220Ω Resistor;;;;
 R6;200Ω Resistor;;;;
@@ -13,13 +12,11 @@ R7;220Ω Resistor;;;;
 solarArray;PHOTOCELL;;;;
 
 Amount;Part Type;mn;mpn;part number;
-1;100Ω Resistor;;;;
 1;200Ω Resistor;;;;
 3;220Ω Resistor;;;;
 1;Arduino Mega 2560 (Rev3);;;;
 1;PHOTOCELL;;;;
 1;Passive Buzzer;;;;
-1;Pushbutton;;;;
+2;Pushbutton;;;;
 1;Red (633nm) LED;;;;
-1;Trimmer Potentiometer;;;;
 1;White (4500K) LED;;;;
