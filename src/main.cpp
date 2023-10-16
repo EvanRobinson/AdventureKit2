@@ -23,9 +23,6 @@ const uint8_t solarArrayAnalogInputPin = 0;
 const uint8_t dimmerAnalogInputPin = 15;
 const uint8_t alarmSystemPWMPin = 13;
 
-const uint8_t testPullupButtonPin = 29;
-ButtonPullUp testButton = ButtonPullUp(testPullupButtonPin);
-
 // Timing constants
 const unsigned long oneTenthOfASecond = 100L; // one 'tick'
 const int ticksPerLighting = 1;               // lighting input happens every tick
@@ -67,18 +64,6 @@ void loop() {
 
   if ((currentMillis - previousMillis) < oneTenthOfASecond) {
     return;
-  }
-
-
-  if (testButton.isPressed()) {
-    if (testButton.hasChanged()) {
-      Serial.println("Pullup Button Pressed");      
-    }
-  }
-  else {
-    if (testButton.hasChanged()) {
-      Serial.println("Pullup Button Released");      
-    }
   }
 
   previousMillis = currentMillis;
