@@ -16,6 +16,9 @@
 #include "photoresistor.h"
 #include "potentiometer.h"
 #include "power.h"
+#include <Wire.h>
+#include "LiquidCrystal_I2C.h"
+
 // Hardware values
 const uint8_t interiorLightsPWMControlPin = 12;
 const uint8_t buttonInputPin = 24;
@@ -41,10 +44,14 @@ const double interiorLightsPowerUsage = 3.0;
 void interiorLighting(void);
 void batteryChargingAndUsage(void);
 
-
+LiquidCrystal_I2C statusDisplay(0x27, 16, 2);
 
 // Arduino Setup
 void setup() {
+  statusDisplay.init();
+  statusDisplay.clear();
+  statusDisplay.backlight();
+
   Serial.begin(9600);
   while (!Serial);
   Serial.println("setup complete");
@@ -129,7 +136,8 @@ void batteryChargingAndUsage() {
   // send battery power level to serial
   // TBD: Remove when this info is sent to hardware display instead of Serial
   if (previousBatteryLevel != electricalStorage.batteryLevel()) {
-      electricalStorage.showStatus();
+    electricalStorage.showStatus(); // manage indicator lights & alarms
+    electricalStorage.showStatus(statusDisplay);  // manage LCD display
   }
   previousBatteryLevel = electricalStorage.batteryLevel();
 }

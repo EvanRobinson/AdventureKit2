@@ -12,6 +12,7 @@
 
 #include <Arduino.h>
 #include "photoresistor.h"
+#include "LiquidCrystal_I2C.h"
 
 class Power {
     public:
@@ -28,6 +29,7 @@ class Power {
         bool isCritical(void);
 
         void showStatus(void);          // manage indicator lights and alarms
+        void showStatus(LiquidCrystal_I2C display); // manage always on display
         void showIndicatorLights(bool full, bool critical, bool low, bool audio);
 
         virtual void tick(void);

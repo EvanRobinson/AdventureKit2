@@ -12,6 +12,7 @@
 #include "led.h"
 #include "photoresistor.h"
 #include "power.h"
+#include "LiquidCrystal_I2C.h"
 
 // Power Storage
 const double maximumBatteryPower = 100.0;
@@ -115,8 +116,7 @@ void Power::usePower(double powerUsed) {
     _battery = max(_battery, 0.0);
 }
 
-void Power::showStatus(void) {
-    // TBD: Output _battery and _solar levels to display
+void Power::showStatus() {
     if (isNearFull()) {
         batteryStatusLight.turnOnGreen();
     }
@@ -132,10 +132,17 @@ void Power::showStatus(void) {
     else {
         batteryStatusLight.turnOff();
     }
-    // TBD: Remove the test when this info is sent to hardware display instead of Serial
-    if (_battery != maximumBatteryPower) {
-        char buffer[50];
-        snprintf(buffer, 50, "Battery: %d%% Solar:%d", (int) _battery, (int) _solarArray.value());
-        Serial.println(buffer);
-    }
+}
+
+
+void Power::showStatus(LiquidCrystal_I2C display) {
+    display.setCursor(0,0);
+    display.print("Batt:   ");
+    display.setCursor(0,1);
+    display.print("Solr:   ");
+
+    display.setCursor(6, 0);
+    display.print(int(_battery));
+    display.setCursor(6, 1);
+    display.print(int(_solarArray.value()));
 }
