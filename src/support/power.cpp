@@ -137,7 +137,7 @@ void Power::showStatus() {
 
 void Power::showStatus(LiquidCrystal_I2C display) {
     display.setCursor(0,0);
-    display.print("Batt:   ");
+    display.print("Batt:    ");
     display.setCursor(0,1);
     display.print("Solr:   ");
 
