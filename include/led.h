@@ -39,7 +39,7 @@ class DimmableLED : LED {
 
 class RedGreenLED {
     public:
-        RedGreenLED(uint8_t redPin, uint8_t greenPin);
+        RedGreenLED(uint8_t batteryLevelLEDRedPin, uint8_t batteryLevelLEDGreenPin);
         bool isOn(void);
         bool isRed(void);
         bool isGreen(void);

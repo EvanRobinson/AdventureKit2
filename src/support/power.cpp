@@ -10,9 +10,10 @@
 #include <Arduino.h>
 #include <math.h>
 #include "led.h"
-#include "photoresistor.h"
-#include "power.h"
 #include "LiquidCrystal_I2C.h"
+#include "photoresistor.h"
+#include "pins.h"
+#include "power.h"
 
 // Power Storage
 const double maximumBatteryPower = 100.0;
@@ -23,9 +24,8 @@ const double criticalThreshold = 10.0;
 
 const int blinkSpeedTicks = 5;
 
-const int redPin = 26;
-const int greenPin = 27;
-RedGreenLED batteryStatusLight = RedGreenLED(redPin, greenPin);
+
+RedGreenLED batteryStatusLight = RedGreenLED(batteryLevelLEDRedPin, batteryLevelLEDGreenPin);
 
 
 Power::Power(uint8_t photoResistorPin) :  _solarArray(photoResistorPin) {

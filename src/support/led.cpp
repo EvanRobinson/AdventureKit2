@@ -6,8 +6,8 @@
     Presumes HIGH is on, LOW is off
 */
 
-#include "led.h"
 #include <Arduino.h>
+#include "led.h"
 
 
 LED::LED(uint8_t pin) {
@@ -54,9 +54,9 @@ bool DimmableLED::isOn(void) {
 }
 
 
-RedGreenLED::RedGreenLED(uint8_t redPin, uint8_t greenPin) {
-    _redPin = redPin;
-    _greenPin = greenPin;
+RedGreenLED::RedGreenLED(uint8_t batteryLevelLEDRedPin, uint8_t batteryLevelLEDGreenPin) {
+    _redPin = batteryLevelLEDRedPin;
+    _greenPin = batteryLevelLEDGreenPin;
     _isOn = false;
     _isRed = false;
     _isGreen = false;
