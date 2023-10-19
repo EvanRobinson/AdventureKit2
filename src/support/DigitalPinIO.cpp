@@ -9,7 +9,7 @@
 #include "DigitalPinIO.h"
 
 // DigitalPinIn
-DigitalPinIn::DigitalPinIn(uint8_t pin, bool pullup = withoutPullup, bool highIsOn = highOn) {
+DigitalPinIn::DigitalPinIn(uint8_t pin, bool pullup = DigitalPinIO::withoutPullup, bool highIsOn = DigitalPinIO::highOn) {
     _pin = pin;
     int mode = pullup ? INPUT_PULLUP : INPUT;
     pinMode(_pin, mode);
@@ -42,7 +42,7 @@ int DigitalPinIn::value(void) {
 }
 
 // DigitalPinOut
-DigitalPinOut::DigitalPinOut(uint8_t pin, bool highIsOn = highOn) {
+DigitalPinOut::DigitalPinOut(uint8_t pin, bool highIsOn = DigitalPinIO::highOn) {
     _pin = pin;
     pinMode(_pin, OUTPUT);
 
@@ -73,4 +73,13 @@ void DigitalPinOut::turnOff(void) {
 
 int DigitalPinOut::value(void) {
     return _lastSetValue;
+}
+
+void DigitalPinOut::toggle(void) {
+    if (isOn()) {
+        turnOff();
+    }
+    else {
+        turnOn();
+    }
 }

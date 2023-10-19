@@ -24,20 +24,18 @@
 // Timing constants
 const unsigned long oneTenthOfASecond = 100L; // one 'tick'
 const int ticksPerLighting = 1;               // lighting input happens every tick
+const int ticksPerMotionSensor = 1;           // motion sensor checked every tick
 const int ticksPerCharging = 10;              // charging happens every second
 
 // Dwelling Contents
-// ButtonPullUp floodlightOverrideButton = ButtonPullUp(floodlightOverridePin);
-// ButtonPullUp interiorLightsButton = ButtonPullUp(interiorLightsButtonPin);
-// ButtonPullUp intruderAlarmOverrideButton = ButtonPullUp(intruderAlarmOverridePin);
-DigitalPinIn floodlightOverrideButton = DigitalPinIn(floodlightOverridePin, DigitalPinIn::withPullup, DigitalPinIn::lowOn);
-DigitalPinIn interiorLightsButton = DigitalPinIn(interiorLightsButtonPin, DigitalPinIn::withPullup, DigitalPinIn::lowOn);
-DigitalPinIn intruderAlarmOverrideButton = DigitalPinIn(intruderAlarmOverridePin, DigitalPinIn::withPullup, DigitalPinIn::lowOn);
+DigitalPinIn floodlightOverrideButton = DigitalPinIn(floodlightOverridePin, DigitalPinIO::withPullup, DigitalPinIO::lowOn);
+DigitalPinIn interiorLightsButton = DigitalPinIn(interiorLightsButtonPin, DigitalPinIO::withPullup, DigitalPinIO::lowOn);
+DigitalPinIn intruderAlarmOverrideButton = DigitalPinIn(intruderAlarmOverridePin, DigitalPinIO::withPullup, DigitalPinIO::lowOn);
 
-DigitalPinOut exteriorFloodlights = DigitalPinOut(exteriorFloodlightsPin, DigitalPinOut::highOn);
-DigitalPinOut exteriorAlertLight = DigitalPinOut(exteriorAlertLightPin, DigitalPinOut::highOn);
+DigitalPinOut exteriorFloodlights = DigitalPinOut(exteriorFloodlightsPin, DigitalPinIO::highOn);
+DigitalPinOut exteriorAlertLight = DigitalPinOut(exteriorAlertLightPin, DigitalPinIO::highOn);
 
-DigitalPinIn intruderAlarm = DigitalPinIn(intruderMotionAlarmPin, DigitalPinIn::withoutPullup, DigitalPinIn::highOn);
+DigitalPinIn intruderAlarm = DigitalPinIn(intruderMotionAlarmPin, DigitalPinIO::withoutPullup, DigitalPinIO::highOn);
 
 Buzzer alarmSystem = Buzzer(alarmSystemPWMPin);
 DimmableLED interiorLights = DimmableLED(interiorLightsPWMControlPin);
@@ -47,8 +45,9 @@ Power electricalStorage = Power(solarArrayAnalogInputPin);
 const double interiorLightsPowerUsage = 3.0;
 
 // Forward Declarations
-void interiorLighting(void);
 void batteryChargingAndUsage(void);
+void interiorLighting(void);
+void motionSensor(int ticks);
 void updateStatusDisplay(void);
 
 
@@ -70,9 +69,6 @@ void setup() {
 // Instead of using delay(), millis() is used to enforce a timing 'tick' of
 // 1/10 of a second (oneTenthOfASecond).
 void loop() {
-  floodlightOverrideButton.isOn() ? exteriorFloodlights.turnOn() : exteriorFloodlights.turnOff();
-  intruderAlarmOverrideButton.isOn() ? exteriorAlertLight.turnOn() : exteriorAlertLight.turnOff();
-
   static int tickCount = 0;
   static unsigned long previousMillis = 0L;
   unsigned long currentMillis = millis();
@@ -95,6 +91,10 @@ void loop() {
   if ((tickCount % ticksPerCharging) == 0) {
     batteryChargingAndUsage();
   }
+
+  if ((tickCount % ticksPerMotionSensor) == 0) {
+    motionSensor(tickCount);
+  }  
 }
 
 // Local Functions
@@ -169,7 +169,6 @@ void updateStatusDisplay(void) {
     statusDisplay.print(" ");
   }
 
-
   if (intruderAlarmOverrideButton.isOn()) {
     statusDisplay.setCursor(15,1);
     statusDisplay.print("*");
@@ -177,5 +176,48 @@ void updateStatusDisplay(void) {
   else {
     statusDisplay.setCursor(15,1);
     statusDisplay.print(" ");
+  }
+}
+
+const int intruderAlarmBlinkTime = 20;
+
+void motionSensor(int ticks) {
+  static bool intruderAlarmLightOn = false;
+  static int intruderAlarmLightOnTime = 0;
+  static bool intruderAlarmBlinking = false;
+  static int intruderAlarmBlinkStartTime = 0;
+
+  if (exteriorAlertLight.isOn() && intruderAlarmOverrideButton.isOn()) {
+    exteriorAlertLight.turnOff();
+    intruderAlarmLightOn = false;
+    intruderAlarmBlinking = false;
+  }
+  if (exteriorFloodlights.isOn() && floodlightOverrideButton.isOn()) {
+    exteriorFloodlights.turnOff();
+  }
+
+  if (intruderAlarm.isOn()) {
+    // turn exterior floodlights and alarm indicator on
+    if (!intruderAlarmLightOn && intruderAlarm.isOn()) {
+      intruderAlarmLightOn = true;
+      intruderAlarmLightOnTime = ticks;
+      exteriorFloodlights.turnOn();
+      exteriorAlertLight.turnOn();
+    }
+    return;
+  }
+
+  if (intruderAlarmLightOn && !intruderAlarmBlinking) {
+    if ((ticks - intruderAlarmLightOnTime) > intruderAlarmBlinkTime) {
+      intruderAlarmBlinking = true;
+      intruderAlarmBlinkStartTime = ticks;
+    }
+  }
+
+  if (intruderAlarmBlinking) {
+    int interval = ticks - intruderAlarmBlinkStartTime;
+    if (interval % 2 == 0) {
+      exteriorAlertLight.toggle();
+    }
   }
 }
