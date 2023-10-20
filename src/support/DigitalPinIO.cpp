@@ -1,5 +1,5 @@
 /*
-    DigitalPinIn.cpp
+    DigitalPinIO.cpp
     Evan Robinson, 2023-10-19
 
     Class to encapsulate simple digital input via pin

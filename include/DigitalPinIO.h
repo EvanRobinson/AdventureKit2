@@ -1,5 +1,5 @@
 /*
-    DigitalPinIn.h
+    DigitalPinIO.h
     Evan Robinson, 2023-10-19
 
     Class to encapsulate simple digital I/O via standard pin

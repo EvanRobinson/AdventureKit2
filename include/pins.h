@@ -21,5 +21,5 @@ const uint8_t batteryLevelLEDGreenPin = 27;
 const uint8_t intruderMotionAlarmPin = 28;
 const uint8_t floodlightOverridePin = 29;
 const uint8_t intruderAlarmOverridePin = 31;
-const uint8_t exteriorFloodlightsPin = 32;
-const uint8_t exteriorAlertLightPin = 33;
+const uint8_t exteriorAlertLightPin = 32;
+const uint8_t exteriorFloodlightsPin = 33;
