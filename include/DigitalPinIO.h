@@ -5,10 +5,11 @@
     Class to encapsulate simple digital I/O via standard pin
 */
 
-#include <Arduino.h>
-
 #ifndef DigitalPinIn_h
 #define DigitalPinIn_h
+
+#include <Arduino.h>
+
 
 class DigitalPinIn {
 public:

@@ -9,6 +9,7 @@
   Lighting now simulates a power drop when on
 */
 #include <Arduino.h>
+#include <Keypad.h>
 #include <math.h>
 #include <Wire.h>
 #include "button.h"
@@ -31,16 +32,28 @@ const int ticksPerCharging = 10;              // charging happens every second
 DigitalPinIn floodlightOverrideButton = DigitalPinIn(floodlightOverridePin, DigitalPinIO::withPullup, DigitalPinIO::lowOn);
 DigitalPinIn interiorLightsButton = DigitalPinIn(interiorLightsButtonPin, DigitalPinIO::withPullup, DigitalPinIO::lowOn);
 DigitalPinIn intruderAlarmOverrideButton = DigitalPinIn(intruderAlarmOverridePin, DigitalPinIO::withPullup, DigitalPinIO::lowOn);
-
 DigitalPinOut exteriorFloodlights = DigitalPinOut(exteriorFloodlightsPin, DigitalPinIO::highOn);
 DigitalPinOut exteriorAlertLight = DigitalPinOut(exteriorAlertLightPin, DigitalPinIO::highOn);
-
 DigitalPinIn intruderAlarm = DigitalPinIn(intruderMotionAlarmPin, DigitalPinIO::withoutPullup, DigitalPinIO::highOn);
-
 Buzzer alarmSystem = Buzzer(alarmSystemPWMPin);
 DimmableLED interiorLights = DimmableLED(interiorLightsPWMControlPin);
 LiquidCrystal_I2C statusDisplay(0x27, 16, 2);
 Power electricalStorage = Power(solarArrayAnalogInputPin);
+
+// keypad
+const byte keypadRows = 4;
+const byte keypadColumns = 4;
+
+const char keys[keypadRows][keypadColumns] = {
+  {'1', '2', '3', 'A'},
+  {'4', '5', '6', 'B'},
+  {'7', '8', '9', 'C'},
+  {'*', '0', '#', 'D'}  
+};
+byte rowPins[keypadRows] = {keypad00, keypad01, keypad02, keypad03};
+byte columnPins[keypadColumns] = {keypad04, keypad05, keypad06, keypad07};
+
+Keypad keypad = Keypad(makeKeymap(keys), rowPins, columnPins, keypadRows, keypadColumns);
 
 const double interiorLightsPowerUsage = 3.0;
 
@@ -56,8 +69,6 @@ void setup() {
   statusDisplay.init();
   statusDisplay.clear();
   statusDisplay.backlight();
-
-  pinMode(intruderMotionAlarmPin, INPUT);
 
   Serial.begin(9600);
   while (!Serial);

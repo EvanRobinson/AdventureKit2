@@ -10,6 +10,7 @@
             "includePath": [
                 "/Users/evro/Dropbox/Programming/Arduino/AI Apocalypse (Kit 2)/AKit2/include",
                 "/Users/evro/Dropbox/Programming/Arduino/AI Apocalypse (Kit 2)/AKit2/src",
+                "/Users/evro/Dropbox/Programming/Arduino/AI Apocalypse (Kit 2)/AKit2/.pio/libdeps/megaatmega2560/Keypad/src",
                 "/Users/evro/Dropbox/Programming/Arduino/AI Apocalypse (Kit 2)/AKit2/.pio/libdeps/megaatmega2560/LiquidCrystal_I2C",
                 "/Users/evro/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
                 "/Users/evro/.platformio/packages/framework-arduino-avr/cores/arduino",
@@ -25,6 +26,7 @@
                 "path": [
                     "/Users/evro/Dropbox/Programming/Arduino/AI Apocalypse (Kit 2)/AKit2/include",
                     "/Users/evro/Dropbox/Programming/Arduino/AI Apocalypse (Kit 2)/AKit2/src",
+                    "/Users/evro/Dropbox/Programming/Arduino/AI Apocalypse (Kit 2)/AKit2/.pio/libdeps/megaatmega2560/Keypad/src",
                     "/Users/evro/Dropbox/Programming/Arduino/AI Apocalypse (Kit 2)/AKit2/.pio/libdeps/megaatmega2560/LiquidCrystal_I2C",
                     "/Users/evro/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
                     "/Users/evro/.platformio/packages/framework-arduino-avr/cores/arduino",
