@@ -7,142 +7,69 @@
     solar charger to charge battery
 */
 
-#include <Arduino.h>
-#include <math.h>
-#include "led.h"
+#include "power.h"
 #include "LiquidCrystal_I2C.h"
+#include "led.h"
 #include "photoresistor.h"
 #include "pins.h"
-#include "power.h"
+#include <Arduino.h>
+#include <math.h>
 
-// Power Storage
+// HouseBattery Storage
 const double maximumBatteryPower = 100.0;
 const double chargingThreshold = 90.0;
 const double prettyFullThreshold = 80.0;
 const double lowThreshold = 25.0;
 const double criticalThreshold = 10.0;
 
-const int blinkSpeedTicks = 5;
-
-
-RedGreenLED batteryStatusLight = RedGreenLED(batteryLevelLEDRedPin, batteryLevelLEDGreenPin);
-
-
-Power::Power(uint8_t photoResistorPin) :  _solarArray(photoResistorPin) {
-    _pin = photoResistorPin;
-    _battery = 0.0;
-    _solar = 0.0;
-    _charging = false;
+HouseBattery::HouseBattery(void) {
+  _battery = 0.0;
+  _charging = false;
 }
 
-double Power::batteryLevel(void) {
-    return _battery;
+double HouseBattery::batteryLevel(void) {
+  return _battery;
 }
 
-double Power::solarPowerLevel(void) {
-    return _solar;
+HouseBatteryPowerLevel HouseBattery::powerLevel(void) {
+  if (_battery < criticalThreshold) {
+    return PowerCritical;
+  }
+  else if (_battery < lowThreshold) {
+    return PowerLow;
+  }
+  else if (_battery < prettyFullThreshold) {
+    return PowerMiddle;
+  }
+  else if (_battery < chargingThreshold) {
+    return PowerNearFull;
+  }
+  else {
+    return PowerFull;
+  }
+}
+bool HouseBattery::isCharging(void) {
+  return _charging;
 }
 
-bool Power::isCharging(void) {
-    return _charging;
+void HouseBattery::chargeBattery(double solarPower) {
+  if (!_charging) {
+    if (_battery < chargingThreshold) {
+      _charging = true;
+    }
+  }
+
+  double solar = solarPower / 50;
+  if (_charging) {
+    _battery += solar;
+    _battery = min(_battery, maximumBatteryPower);
+    if (_battery == maximumBatteryPower) {
+      _charging = false;
+    }
+  }
 }
 
-bool Power::isNearFull(void) {
-    return _battery > chargingThreshold;
-}
-
-bool Power::isLow(void) {
-    return _battery < lowThreshold;
-}
-
-bool Power::isCritical(void) {
-    return _battery < criticalThreshold;
-}
-
-void Power::chargeBattery(void) {
-    if (!_charging) {
-        if (_battery < chargingThreshold) {
-            _charging = true;
-        } 
-    }
-
-    _solar = _solarArray.value() / 50;
-    if (_charging) {
-        _battery += _solar;
-        _battery = min(_battery, maximumBatteryPower);
-        if (_battery == maximumBatteryPower) {
-            _charging = false;
-        }
-    }
-}
-
-void Power::tick(void) {
-    static int tickCount = 0;
-
-    tickCount++;
-
-    bool blink = false;
-
-    // blink red if low but not critical
-    if (isLow() && !isCritical()) {
-        blink = true;   // blinking red
-    }
-    if (_battery > prettyFullThreshold && !isNearFull()) {
-        blink = true;   // blinking green
-    }
-    if (blink) {
-        if ((tickCount % blinkSpeedTicks) == 0) {
-            if (batteryStatusLight.isOn()) {
-                batteryStatusLight.turnOff();
-            }
-            else {
-                if (batteryStatusLight.wasRed()) {
-                    batteryStatusLight.turnOnRed();
-                }
-                else {
-                    batteryStatusLight.turnOnGreen();
-                }
-            }
-        }
-    }
-
-    if (tickCount > blinkSpeedTicks) {
-        tickCount = 0;
-    }
-}
-
-void Power::usePower(double powerUsed) {
-    _battery -= powerUsed;
-    _battery = max(_battery, 0.0);
-}
-
-void Power::showStatus() {
-    if (isNearFull()) {
-        batteryStatusLight.turnOnGreen();
-    }
-    else if (_battery > prettyFullThreshold) {
-        batteryStatusLight.turnOnGreen();
-    }
-    else if (isCritical()) {
-        batteryStatusLight.turnOnRed();
-    }
-    else if (isLow()) {
-        batteryStatusLight.turnOnRed();
-    }
-    else {
-        batteryStatusLight.turnOff();
-    }
-}
-
-
-void Power::showStatus(LiquidCrystal_I2C display) {
-    display.setCursor(0,0);
-    display.print("Batt:    ");
-    display.setCursor(0,1);
-    display.print("Solr:   ");
-
-    display.setCursor(6, 0);
-    display.print(int(_battery));
-    display.setCursor(6, 1);
-    display.print(int(_solarArray.value()));
+void HouseBattery::usePower(double powerUsed) {
+  _battery -= powerUsed;
+  _battery = max(_battery, 0.0);
 }

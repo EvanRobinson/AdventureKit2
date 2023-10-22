@@ -24,7 +24,6 @@ class Buzzer {
         void alarmOff(void);
 
         void play(int frequency, unsigned long duration);
-        void tick();    // enable variable sounds
     protected:
     private:
         uint8_t _pin;

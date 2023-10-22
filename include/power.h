@@ -9,37 +9,35 @@
 
 #ifndef power_h
 #define power_h
- 
-#include <Arduino.h>
-#include "photoresistor.h"
+
 #include "LiquidCrystal_I2C.h"
+#include "photoresistor.h"
+#include <Arduino.h>
 
-class Power {
-    public:
-        Power(uint8_t photoResistorPin);
-        void usePower(double powerUsed);
-        void chargeBattery();
+typedef enum {
+  PowerCritical = 0,
+  PowerLow,
+  PowerMiddle,
+  PowerNearFull,
+  PowerFull
+} HouseBatteryPowerLevel;
 
-        // provides a returned value from 0.0 to 100.0
-        double batteryLevel(void);
-        double solarPowerLevel(void);
-        bool isCharging(void);
-        bool isNearFull(void);
-        bool isLow(void);
-        bool isCritical(void);
+class HouseBattery {
+public:
+  HouseBattery(void);
+  void usePower(double powerUsed);
+  void chargeBattery(double solarPower);
 
-        void showStatus(void);          // manage indicator lights and alarms
-        void showStatus(LiquidCrystal_I2C display); // manage always on display
-        void showIndicatorLights(bool full, bool critical, bool low, bool audio);
+  // provides a returned value from 0.0 to 100.0
+  double batteryLevel(void);
+  HouseBatteryPowerLevel powerLevel(void);
 
-        virtual void tick(void);
-    protected:
-    private:
-        PhotoResistor _solarArray;
-        double _battery;
-        double _solar;
-        uint8_t _pin;
-        bool _charging;
+  bool isCharging(void);
+
+protected:
+private:
+  double _battery;
+  bool _charging;
 };
 
 #endif

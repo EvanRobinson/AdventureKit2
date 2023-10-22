@@ -1,0 +1,9 @@
+# .clang-format for VS Code Arduino Programmer
+Language:		Cpp
+BasedOnStyle:	LLVM
+ColumnLimit:	120
+AllowShortFunctionsOnASingleLine: None
+AllowShortEnumsOnASingleLine: false
+BreakBeforeBraces:	Custom
+BraceWrapping:
+	BeforeElse:	true
