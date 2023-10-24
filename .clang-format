@@ -7,3 +7,6 @@ AllowShortEnumsOnASingleLine: false
 BreakBeforeBraces:	Custom
 BraceWrapping:
 	BeforeElse:	true
+AlignArrayOfStructures: None
+BreakConstructorInitializers: AfterColon
+PackConstructorInitializers: Never

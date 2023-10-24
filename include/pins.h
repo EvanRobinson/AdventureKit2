@@ -18,6 +18,8 @@ const uint8_t interiorLightsPWMControlPin = 12;
 const uint8_t alarmSystemPWMPin = 13;
 
 // Digital Pins
+const uint8_t lockGreenPin = 22;
+const uint8_t lockRedPin = 23;
 const uint8_t interiorLightsButtonPin = 24;
 const uint8_t batteryLevelLEDRedPin = 26;
 const uint8_t batteryLevelLEDGreenPin = 27;
@@ -26,6 +28,7 @@ const uint8_t exteriorLightsButtonPin = 29;
 const uint8_t intruderAlarmOverridePin = 31;
 const uint8_t exteriorAlertLightPin = 32;
 const uint8_t exteriorFloodlightsPin = 33;
+
 // Keypad
 const uint8_t keypad00 = 34;
 const uint8_t keypad01 = 35;

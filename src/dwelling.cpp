@@ -14,8 +14,8 @@
 #include "LiquidCrystal_I2C.h"
 #include "pins.h"
 
-const int intruderAlarmBlinkTime = 20;
-const double interiorLightsPowerUsage = 3.0;
+const int interiorLightsPowerUsage = 1;
+const int exteriorLightsPowerUsage = 3;
 
 // interiorLights levels:
 const int interiorLightsCritical = 2;
@@ -27,26 +27,38 @@ const byte keypadRows = 4;
 const byte keypadColumns = 4;
 
 const char keys[keypadRows][keypadColumns] = {
-    {'1', '2', '3', 'A'}, {'4', '5', '6', 'B'}, {'7', '8', '9', 'C'}, {'*', '0', '#', 'D'}};
+    {'1', '2', '3', 'A'},
+    {'4', '5', '6', 'B'},
+    {'7', '8', '9', 'C'},
+    {'*', '0', '#', 'D'},
+};
 byte rowPins[keypadRows] = {keypad00, keypad01, keypad02, keypad03};
 byte columnPins[keypadColumns] = {keypad04, keypad05, keypad06, keypad07};
 
-Dwelling::Dwelling(void)
-    : _alarmSystem(alarmSystemPWMPin), _electricalStorage(),
-      _exteriorLights(exteriorFloodlightsPin, DigitalPinIO::highOn), _interiorLights(interiorLightsPWMControlPin),
-      _intruderAlarm(intruderMotionAlarmPin, DigitalPinIO::withoutPullup, DigitalPinIO::highOn),
-      _solarArray(solarArrayAnalogInputPin), _batteryStatusLight(batteryLevelLEDRedPin, batteryLevelLEDGreenPin),
-      _exteriorAlertLight(exteriorAlertLightPin, DigitalPinIO::highOn), _statusDisplay(0x27, 16, 2),
-      _exteriorLightsButton(exteriorLightsButtonPin, DigitalPinIO::withPullup, DigitalPinIO::lowOn),
-      _interiorLightsButton(interiorLightsButtonPin, DigitalPinIO::withPullup, DigitalPinIO::lowOn),
-      _keypad(makeKeymap(keys), rowPins, columnPins, keypadRows, keypadColumns) {
+Dwelling::Dwelling(void) :
+    _alarmSystem(alarmSystemPWMPin),
+    _electricalStorage(),
+    _exteriorLights(exteriorFloodlightsPin, DigitalPinIO::highOn),
+    _interiorLights(interiorLightsPWMControlPin),
+    _intruderAlarm(intruderMotionAlarmPin, DigitalPinIO::withoutPullup, DigitalPinIO::highOn),
+    _solarArray(solarArrayAnalogInputPin),
+    _batteryStatusLight(batteryLevelLEDRedPin, batteryLevelLEDGreenPin),
+    _exteriorAlertLight(exteriorAlertLightPin, DigitalPinIO::highOn),
+    _statusDisplay(0x27, 16, 2),
+    _exteriorLightsButton(exteriorLightsButtonPin, DigitalPinIO::withPullup, DigitalPinIO::lowOn),
+    _interiorLightsButton(interiorLightsButtonPin, DigitalPinIO::withPullup, DigitalPinIO::lowOn),
+    _accessStatus(lockRedPin, lockGreenPin),
+    _keypad(makeKeymap(keys), rowPins, columnPins, keypadRows, keypadColumns) {
   _exteriorLightsTurnedOnManually = false;
+  _unlocked = false;
 }
 
 void Dwelling::init(void) {
-  _statusDisplay.init();
-  _statusDisplay.clear();
-  _statusDisplay.backlight();
+  _accessStatus.turnOnRed();
+  if (_unlocked) {
+    _accessStatus.turnOnGreen();
+  }
+  initStatusDisplay();
 }
 
 void Dwelling::tick(int tickCount) {
@@ -66,8 +78,73 @@ void Dwelling::tick(int tickCount) {
   }
 
   if ((tickCount % ticksPerMotionSensor) == 0) {
-    securitySystems(tickCount);
+    exteriorMotionDetector(tickCount);
   }
+}
+
+void Dwelling::unlock(void) {
+  const int codeLength = 6;
+  const int failureLimit = 3;
+  static int failures = 0;
+
+  initStatusDisplay(); // clear status display, make sure it's backlit
+  while (!_unlocked) {
+    _statusDisplay.setCursor(0, 0);
+    _statusDisplay.print("Input PIN:     ");
+    const char code[codeLength + 1] = {'7', '4', '5', '2', 'A', '0', 0}; // + 1 accounts for terminal 0
+    char input[codeLength + 1] = {' ', ' ', ' ', ' ', ' ', ' ', 0};      // + 1 accounts for terminal 0
+
+    for (int inputChars = 0; inputChars < codeLength; inputChars++) {
+      char key = _keypad.waitForKey();
+      if (key) {
+        input[inputChars] = key;
+        _statusDisplay.setCursor(10 + inputChars, 0);
+        _statusDisplay.print("*");
+      }
+    }
+    bool goodCode = true;
+    for (int codeIndex = 0; codeIndex < codeLength; codeIndex++) {
+      if (input[codeIndex] != code[codeIndex]) {
+        goodCode = false;
+        break;
+      }
+    }
+    if (goodCode) {
+      _unlocked = true;
+      _accessStatus.turnOff();
+      _accessStatus.turnOnGreen();
+      Serial.println("Unlocked");
+      _statusDisplay.clear();
+      printToStatusDisplay(0, 0, "System Unlocked");
+      delay(2000);
+      _statusDisplay.clear();
+    }
+    else {
+      failures++;
+      if (failures == failureLimit) {
+        _statusDisplay.clear();
+        printToStatusDisplay(0, 0, "There Will Be A");
+        printToStatusDisplay(0, 1, "15 Second Delay");
+        delay(15000);
+        _statusDisplay.clear();
+        failures = 0;
+      }
+      else {
+        _statusDisplay.clear();
+        printToStatusDisplay(0, 0, 10, "Bad Code:", failures);
+        printToStatusDisplay(0, 1, "Try Again");
+        delay(5000);
+      }
+
+      _statusDisplay.clear();
+    }
+  }
+}
+
+void Dwelling::initStatusDisplay(void) {
+  _statusDisplay.init();
+  _statusDisplay.clear();
+  _statusDisplay.backlight();
 }
 
 void Dwelling::lighting() {
@@ -144,11 +221,9 @@ void Dwelling::batteryChargingAndUsage() {
 
   // account for interiorLights power usage
   if (_interiorLights.isOn()) {
-    int interiorLightsPowerUsage = 1;
     _electricalStorage.usePower(interiorLightsPowerUsage);
   }
   if (_exteriorLights.isOn()) {
-    int exteriorLightsPowerUsage = 3;
     _electricalStorage.usePower(exteriorLightsPowerUsage);
   }
 }
@@ -178,11 +253,19 @@ void Dwelling::statusDisplays(int tickCount) {
   printIndicatorToStatusDisplay(12, 0, _exteriorLightsButton.isOn(), 'E');
 }
 
-void Dwelling::printToStatusDisplay(uint8_t x, uint8_t y, uint8_t valueOffset, const char *clearString, int value) {
+void Dwelling::printToStatusDisplay(uint8_t x, uint8_t y, const char *string) {
   _statusDisplay.setCursor(x, y);
-  _statusDisplay.print(clearString);
-  _statusDisplay.setCursor(x + valueOffset, y);
+  _statusDisplay.print(string);
+}
+
+void Dwelling::printToStatusDisplay(uint8_t x, uint8_t y, int value) {
+  _statusDisplay.setCursor(x, y);
   _statusDisplay.print(value);
+}
+
+void Dwelling::printToStatusDisplay(uint8_t x, uint8_t y, uint8_t valueOffset, const char *clearString, int value) {
+  printToStatusDisplay(x, y, clearString);
+  printToStatusDisplay(x + valueOffset, y, value);
 }
 
 bool Dwelling::printIndicatorToStatusDisplay(uint8_t x, uint8_t y, bool print, const char indicator) {
@@ -232,7 +315,7 @@ void Dwelling::houseBatteryStatusLight(int tickCount) {
   }
 }
 
-void Dwelling::securitySystems(int ticks) {
+void Dwelling::exteriorMotionDetector(int ticks) {
   if (_intruderAlarm.isOn()) {
     // turn exterior floodlights and alarm indicator on
     if (_electricalStorage.powerLevel() != PowerCritical) {

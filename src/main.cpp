@@ -13,7 +13,7 @@
 #include "dwelling.h"
 
 // Timing constants
-const unsigned long oneTenthOfASecond = 100L;  // one 'tick'
+const unsigned long oneTenthOfASecond = 100L; // one 'tick'
 
 Dwelling dwelling = Dwelling();
 
@@ -21,9 +21,11 @@ Dwelling dwelling = Dwelling();
 void setup() {
   dwelling.init();
 
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial)
     ;
+
+  dwelling.unlock();
   Serial.println("setup complete");
 }
 
@@ -41,5 +43,6 @@ void loop() {
 
   previousMillis = currentMillis;
   tickCount++;
+
   dwelling.tick(tickCount);
 }

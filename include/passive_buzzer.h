@@ -11,26 +11,25 @@
 #include <Arduino.h>
 
 typedef enum {
-    noAlarm = 0,
-    alert,
-    power_critical,
-    power_low
+  noAlarm = 0,
+  alert,
+  power_critical,
+  power_low
 } AlarmSignals;
 
 class Buzzer {
-    public:
-        Buzzer(uint8_t pin);
-        void alarm(AlarmSignals signal);
-        void alarmOff(void);
+public:
+  Buzzer(uint8_t pin);
+  void alarm(AlarmSignals signal);
+  void alarmOff(void);
 
-        void play(int frequency, unsigned long duration);
-    protected:
-    private:
-        uint8_t _pin;
-        int _currentTone;
-        int _alarmTime;
-        AlarmSignals _alarm;
-        AlarmSignals _previousAlarm;
+  void play(int frequency, unsigned long duration);
+
+protected:
+private:
+  uint8_t _pin;
+  AlarmSignals _alarm;
+  AlarmSignals _previousAlarm;
 };
 
 #endif

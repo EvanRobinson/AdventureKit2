@@ -1,0 +1,40 @@
+37 In 1 Sensor Module Board Set Starter Kit
+https://www.instructables.com/id/Arduino-37-in-1-Sensors-Kit-Explained/
+Item ID Description
+01 HW-512 Active buzzer module 
+02 HW-508 Passive buzzer module 
+03 HW-477 Two color common cathode RG LED module 
+04 HW-480 Two color common cathode GR LED module 
+05 HW-500 Knock sensor module 
+06 HW-513 Shock switch sensor module 
+07 HW-486 Photo resistor sensor module 
+08 HW-483 Push button module 
+09 HW-501 Tilt switch module (ball) 
+10 HW-479 RGB LED module 
+11 HW-489 Infrared transmit module 
+12 HW-478 RGB colorful LED SMD module 
+13 HW-505 Mercury Tilt Switch (Hydrargyrum) module 
+14 HW-481 Colorful auto lash module 
+15 HW-484 Magnet-ring reed switch sensor module 
+16 HW-492 Hall sensor switch module 
+17 HW-490 Infrared receive sensor module 
+18 HW-495 Analogy hall sensor module 
+19 HW-499 Magic ring cup module Mercury tilt + RGB led 
+20 HW-040 Rotate encode module 
+21 HW-487 Light break sensor module 
+22 HW-502 Finger pulse sensor module 
+23 HW-497 Magnetic reed spring module 
+24 KeyesIR Obstacle avoidance sensor module
+25 HW-511 Tracking sensor module 
+26 HW-485 Large sound microphone voice sensor module 
+27 HW Laser transmit module 
+28 HW-482 Relay module 
+29 HW-498 Analog temperature sensor module 
+30 HW-506 18b20 temperature sensor module 
+31 HW-503 Digital temperature sensor module 
+32 HW-509 Linear hall Sensor module 
+33 HW-491 Flame sensor module 
+34 HW-496 High sensitive microphone voice sensor module 
+35 HW-507 Humidity sensor module 
+36 HW-504 Joystick PS2 module 
+37 HW-494 Touch sensor module 

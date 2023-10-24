@@ -41,30 +41,40 @@ public:
   DigitalPinOut _exteriorLights;
   DimmableLED _interiorLights;
   DigitalPinIn _intruderAlarm;
-  PhotoResistor _solarArray; // from power
+  PhotoResistor _solarArray;
 
   // Status Displays
-  RedGreenLED _batteryStatusLight; // from power
+  RedGreenLED _batteryStatusLight;
   DigitalPinOut _exteriorAlertLight;
   LiquidCrystal_I2C _statusDisplay;
 
   // control board
   DigitalPinIn _exteriorLightsButton;
   DigitalPinIn _interiorLightsButton;
+  RedGreenLED _accessStatus;
   Keypad _keypad; // from main.cpp
 
   Dwelling(void);           // all pins, etc. are hard coded in constructor
   void tick(int tickCount); // run every 1/10 second
   void lighting(void);
   void batteryChargingAndUsage(void);
-  void securitySystems(int tickCount);
+  void exteriorMotionDetector(int tickCount);
   void statusDisplays(int tickCount);
 
+  void unlock(void);
+
 private:
+  void printToStatusDisplay(uint8_t x, uint8_t y, const char *string);
+  void printToStatusDisplay(uint8_t x, uint8_t y, int value);
+  // prints a header and value to display.  Header starts at (x, y), printing clearString (which includes spaces to
+  //   clear the space the value will occupy), then prints the value at (x+valueOffset, y)
   void printToStatusDisplay(uint8_t x, uint8_t y, uint8_t valueOffset, const char *clearString, int value);
+    // prints or clears (bool print) an "indicator" (single character) at (x, y)
   bool printIndicatorToStatusDisplay(uint8_t x, uint8_t y, bool print, const char indicator);
   void houseBatteryStatusLight(int tickCount);
+  void initStatusDisplay(void);
 
   bool _exteriorLightsTurnedOnManually;
+  bool _unlocked;
 };
 #endif
